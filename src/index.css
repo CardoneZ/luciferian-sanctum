@@ -2167,3 +2167,675 @@ body {
   letter-spacing: 1px;
   color: var(--gold-primary);
 }
+
+/* ==========================================================================
+   INTERACTIVE RITUAL ARENA & LIVING GEOMETRY CANVAS
+   ========================================================================== */
+.ritual-arena-component {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Temple View Mode Switcher Bar */
+.temple-view-mode-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 8px 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mode-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(22, 10, 32, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  color: var(--gold-light);
+  border-color: var(--gold-primary);
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, var(--crimson-primary) 0%, var(--crimson-dark) 100%);
+  border-color: var(--gold-primary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(192, 38, 43, 0.5);
+}
+
+.arena-header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.arena-tag {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--crimson-vivid);
+}
+
+.arena-main-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--gold-light);
+  letter-spacing: 1px;
+}
+
+.arena-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.arena-quick-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(26, 12, 38, 0.8);
+  border: 1px solid var(--border-gold);
+  color: var(--gold-light);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arena-quick-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+}
+
+.arena-quick-btn.primary {
+  background: linear-gradient(135deg, var(--crimson-primary) 0%, var(--crimson-dark) 100%);
+  border-color: var(--gold-primary);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(192, 38, 43, 0.5);
+}
+
+.arena-quick-btn.primary:hover {
+  background: linear-gradient(135deg, var(--crimson-vivid) 0%, var(--crimson-primary) 100%);
+  box-shadow: 0 0 18px var(--crimson-flame);
+}
+
+/* Arena Canvas Stage */
+.arena-canvas-stage {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #150620 0%, #0a0312 65%, #030105 100%);
+  border: 2px solid var(--border-gold);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), inset 0 0 50px rgba(138, 18, 29, 0.25);
+}
+
+.arena-svg-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.quarter-node {
+  pointer-events: all;
+  transition: all 0.2s ease;
+}
+
+.quarter-node:hover circle:first-child {
+  stroke: var(--gold-light);
+  filter: drop-shadow(0 0 8px var(--gold-glow));
+}
+
+.active-quarter circle:first-child {
+  stroke: var(--gold-light);
+  filter: drop-shadow(0 0 14px var(--crimson-flame));
+}
+
+/* Center Sigil in Arena */
+.arena-center-sigil-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.arena-center-sigil-node:hover {
+  transform: translate(-50%, -50%) scale(1.03);
+}
+
+/* Candles on Arena Floor */
+.arena-candle-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.arena-candle-node:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.candle-flame-holder {
+  height: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.arena-flame {
+  width: 12px;
+  height: 26px;
+  border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+  position: relative;
+  animation: arenaFlameFlicker 0.18s infinite alternate ease-in-out;
+}
+
+.flame-black {
+  background: linear-gradient(to top, #ef4444 0%, #f59e0b 50%, #fef08a 100%);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.8), 0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+.flame-red {
+  background: linear-gradient(to top, #580a12 0%, #c0262b 50%, #fca5a5 100%);
+  box-shadow: 0 0 14px rgba(192, 38, 43, 0.9), 0 0 25px rgba(192, 38, 43, 0.4);
+}
+
+.flame-white {
+  background: linear-gradient(to top, #38bdf8 0%, #e0f2fe 40%, #ffffff 100%);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 25px rgba(56, 189, 248, 0.4);
+}
+
+.flame-blue {
+  background: linear-gradient(to top, #1e3a8a 0%, #0284c7 50%, #bae6fd 100%);
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.85), 0 0 25px rgba(2, 132, 199, 0.35);
+}
+
+.flame-blackFlame {
+  width: 16px;
+  height: 34px;
+  background: linear-gradient(to top, #000000 0%, #4c0519 40%, #991b1b 80%, #fef08a 100%);
+  box-shadow: 0 0 18px rgba(153, 27, 27, 0.95), 0 0 35px rgba(138, 43, 226, 0.7);
+}
+
+.inner-dark-core {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 14px;
+  background: #000;
+  border-radius: 50% 50% 20% 20%;
+}
+
+@keyframes arenaFlameFlicker {
+  0% { transform: scale(1) rotate(-1.5deg); }
+  100% { transform: scale(1.08, 0.95) rotate(2deg); }
+}
+
+.arena-wick {
+  width: 2px;
+  height: 6px;
+  background: #3f3f46;
+}
+
+.arena-wax-body {
+  width: 20px;
+  height: 52px;
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.wax-black {
+  background: linear-gradient(to right, #18181b, #27272a, #09090b);
+}
+
+.wax-red {
+  background: linear-gradient(to right, #7f1d1d, #b91c1c, #450a0a);
+}
+
+.wax-white {
+  background: linear-gradient(to right, #e2e8f0, #f8fafc, #cbd5e1);
+}
+
+.wax-blue {
+  background: linear-gradient(to right, #1e3a8a, #2563eb, #172554);
+}
+
+.wax-blackFlame {
+  background: linear-gradient(to right, #09090b, #27272a, #450a0a);
+  border: 1px solid var(--border-gold);
+  width: 26px;
+  height: 62px;
+}
+
+.wax-label {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  color: #fff;
+  opacity: 0.75;
+  text-transform: uppercase;
+}
+
+.arena-candle-base {
+  width: 28px;
+  height: 6px;
+  background: #27272a;
+  border-radius: 0 0 3px 3px;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* Arena Tools: Bell, Chalice, Censer, Anoint */
+.arena-tool-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.arena-tool-node:hover {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.tool-floating-tag {
+  margin-top: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  background: rgba(10, 4, 15, 0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  white-space: nowrap;
+}
+
+/* Bell Rig */
+.bell-brass-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bell-tool.ringing .bell-swing-svg {
+  animation: bellSwingAnim 0.3s 3 ease-in-out;
+}
+
+@keyframes bellSwingAnim {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-22deg); }
+  75% { transform: rotate(22deg); }
+}
+
+.sound-wave-ripple {
+  animation: soundRippleExpand 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes soundRippleExpand {
+  0% { r: 20; opacity: 0.9; stroke-width: 3; }
+  100% { r: 380; opacity: 0; stroke-width: 0.5; }
+}
+
+/* Chalice Rig */
+.chalice-cup-model {
+  width: 34px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: transform 0.4s ease;
+}
+
+.chalice-tool.drinking-active .chalice-cup-model {
+  animation: chaliceTiltAnim 1.8s ease-in-out;
+}
+
+@keyframes chaliceTiltAnim {
+  0% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-18px) rotate(-35deg) scale(1.15); }
+  70% { transform: translateY(-18px) rotate(-40deg) scale(1.15); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+.chalice-bowl {
+  width: 32px;
+  height: 24px;
+  border: 2px solid var(--gold-primary);
+  border-radius: 0 0 16px 16px;
+  background: rgba(10, 4, 15, 0.7);
+  overflow: hidden;
+  position: relative;
+}
+
+.chalice-wine-level {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, #450a0a, #c0262b);
+  transition: height 0.8s ease;
+}
+
+.chalice-stem {
+  width: 5px;
+  height: 14px;
+  background: var(--gold-primary);
+}
+
+.chalice-foot {
+  width: 26px;
+  height: 5px;
+  background: var(--gold-primary);
+  border-radius: 4px;
+}
+
+/* Censer Rig */
+.censer-bowl-model {
+  width: 36px;
+  height: 26px;
+  background: radial-gradient(circle, #580a12 0%, #1a0a24 80%);
+  border: 2px solid var(--gold-primary);
+  border-radius: 0 0 18px 18px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.censer-charcoal {
+  width: 14px;
+  height: 6px;
+  background: #f87171;
+  border-radius: 3px;
+  margin-top: 2px;
+  box-shadow: 0 0 8px #f87171;
+}
+
+.censer-smoke-fumes {
+  position: absolute;
+  top: -10px;
+  width: 30px;
+  height: 35px;
+  pointer-events: none;
+}
+
+.smoke-fume {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(212, 175, 55, 0.45);
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: arenaSmokeFume 2.4s infinite ease-out;
+}
+
+.smoke-fume.f1 { left: 4px; animation-delay: 0s; }
+.smoke-fume.f2 { left: 12px; animation-delay: 0.8s; }
+.smoke-fume.f3 { left: 20px; animation-delay: 1.6s; }
+
+@keyframes arenaSmokeFume {
+  0% { transform: translateY(5px) scale(0.6); opacity: 0.9; }
+  100% { transform: translateY(-40px) scale(2.6); opacity: 0; }
+}
+
+/* Anoint 'X' Glyph */
+.anoint-x-cross {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.x-slash {
+  position: absolute;
+  width: 4px;
+  height: 32px;
+  background: linear-gradient(to bottom, #fef08a, #c0262b);
+  border-radius: 2px;
+  box-shadow: 0 0 10px var(--crimson-flame);
+}
+
+.slash-1 { transform: rotate(45deg); }
+.slash-2 { transform: rotate(-45deg); }
+
+/* ==========================================================================
+   INTERACTIVE ROTATING ATHAME BLADE RIG
+   ========================================================================== */
+.arena-athame-rig {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 180px;
+  transform-origin: 50% 140px;
+  z-index: 30;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.9));
+}
+
+.arena-athame-rig:hover {
+  filter: drop-shadow(0 0 15px var(--gold-glow)) brightness(1.2);
+}
+
+.arena-athame-rig.thrusting {
+  animation: athameThrustAnim 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes athameThrustAnim {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -70%) scale(1.15); filter: drop-shadow(0 0 25px var(--crimson-flame)) brightness(1.4); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.blade-aura-glow {
+  position: absolute;
+  top: -10px;
+  width: 34px;
+  height: 110px;
+  border-radius: 50% 50% 10% 10%;
+  background: radial-gradient(ellipse at 50% 20%, rgba(254, 240, 138, 0.35) 0%, rgba(192, 38, 43, 0.2) 60%, transparent 80%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.athame-blade-tip {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 24px solid #f1f5f9;
+}
+
+.athame-blade-core {
+  width: 20px;
+  height: 85px;
+  background: linear-gradient(to right, #94a3b8 0%, #f8fafc 45%, #64748b 55%, #cbd5e1 100%);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.blade-fuller-groove {
+  width: 3px;
+  height: 70px;
+  background: #334155;
+  border-radius: 2px;
+}
+
+.athame-guard {
+  width: 48px;
+  height: 12px;
+  background: linear-gradient(to right, #854d0e 0%, #d4af37 50%, #713f12 100%);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.guard-gem {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ef4444;
+}
+
+.athame-hilt {
+  width: 12px;
+  height: 42px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #18181b,
+    #18181b 4px,
+    #27272a 4px,
+    #27272a 8px
+  );
+  border: 1px solid #000;
+}
+
+.athame-pommel {
+  width: 18px;
+  height: 14px;
+  background: linear-gradient(to bottom, #d4af37, #854d0e);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.energy-beam-pulse {
+  animation: beamFlash 0.8s ease-out forwards;
+}
+
+@keyframes beamFlash {
+  0% { opacity: 0.95; stroke-dasharray: 6 3; }
+  50% { opacity: 1; stroke-width: 7; }
+  100% { opacity: 0; stroke-width: 1; }
+}
+
+/* Arena Compass Dock at Bottom */
+.arena-compass-dock {
+  background: rgba(14, 6, 20, 0.8);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.compass-dock-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.compass-dock-left strong {
+  color: var(--gold-light);
+}
+
+.compass-target-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.target-btn {
+  background: rgba(26, 12, 38, 0.7);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.target-btn:hover {
+  background: rgba(138, 18, 29, 0.4);
+  color: #fff;
+  border-color: var(--gold-primary);
+}
+
+.target-btn.active {
+  background: var(--crimson-primary);
+  border-color: var(--gold-light);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(192, 38, 43, 0.6);
+}
+
+.target-btn.center-btn {
+  background: rgba(35, 15, 50, 0.9);
+  color: var(--gold-light);
+  font-weight: 700;
+}
+

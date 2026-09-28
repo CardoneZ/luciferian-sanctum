@@ -3,6 +3,7 @@ import { RITUALS } from './data/ritualsData';
 import { audioEngine } from './utils/audioEngine';
 import LuciferSigil from './components/LuciferSigil';
 import AltarSimulation from './components/AltarSimulation';
+import InteractiveRitualArena from './components/InteractiveRitualArena';
 import RitualJourney from './components/RitualJourney';
 import GrimoireLibrary from './components/GrimoireLibrary';
 import {
@@ -17,7 +18,9 @@ import {
   Copy,
   Check,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Eye,
+  Activity
 } from 'lucide-react';
 
 export default function App() {
@@ -25,6 +28,7 @@ export default function App() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [currentSigilType, setCurrentSigilType] = useState('lucifer_ouroboros');
   const [activeMainView, setActiveMainView] = useState('temple'); // 'temple', 'altar_only', 'grimoire', 'prompt_export'
+  const [templeMode, setTempleMode] = useState('arena'); // 'arena' (animated circle) or 'classic'
   const [isAmbientOn, setIsAmbientOn] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isSigilEmpowered, setIsSigilEmpowered] = useState(false);
@@ -200,23 +204,37 @@ export default function App() {
         {/* VIEW 1: TEMPLE & JOURNEY (SPLIT SCREEN SIMULATION + TELEPROMPTER) */}
         {activeMainView === 'temple' && (
           <div className="temple-journey-split-layout">
-            {/* Left/Center Column: The Central Altar & Central Lucifer Sigil */}
+            {/* Left/Center Column: The Living Ritual Arena & Central Lucifer Circle */}
             <section className="temple-simulation-column">
-              {/* Sigil Selection Pill Bar */}
-              <div className="sigil-selector-bar">
-                <span className="sigil-bar-label">CENTRAL SIGIL:</span>
+              {/* Display Mode & Sigil Bar */}
+              <div className="temple-view-mode-bar">
+                <div className="mode-toggle-group">
+                  <button
+                    className={`mode-btn ${templeMode === 'arena' ? 'active' : ''}`}
+                    onClick={() => setTempleMode('arena')}
+                  >
+                    <Activity size={14} /> Circle Arena (Live Animations)
+                  </button>
+                  <button
+                    className={`mode-btn ${templeMode === 'classic' ? 'active' : ''}`}
+                    onClick={() => setTempleMode('classic')}
+                  >
+                    <Compass size={14} /> Altar Tools Table
+                  </button>
+                </div>
+
                 <div className="sigil-pill-buttons">
                   <button
                     className={`sigil-pill ${currentSigilType === 'lucifer_ouroboros' ? 'active' : ''}`}
                     onClick={() => setCurrentSigilType('lucifer_ouroboros')}
                   >
-                    Lucifer Circle (Grimoire)
+                    Circle (Woodcut)
                   </button>
                   <button
                     className={`sigil-pill ${currentSigilType === 'lucifer_ouroboros_svg' ? 'active' : ''}`}
                     onClick={() => setCurrentSigilType('lucifer_ouroboros_svg')}
                   >
-                    Lucifer Circle (SVG)
+                    Circle (SVG)
                   </button>
                   <button
                     className={`sigil-pill ${currentSigilType === 'sigil_lucifer' ? 'active' : ''}`}
@@ -228,41 +246,61 @@ export default function App() {
                     className={`sigil-pill ${currentSigilType === 'sigil_alb' ? 'active' : ''}`}
                     onClick={() => setCurrentSigilType('sigil_alb')}
                   >
-                    ALB Talisman
+                    ALB
                   </button>
                   <button
                     className={`sigil-pill ${currentSigilType === 'circle_adversary' ? 'active' : ''}`}
                     onClick={() => setCurrentSigilType('circle_adversary')}
                   >
-                    8 Kings Adversary
+                    8 Kings
                   </button>
                   <button
                     className={`sigil-pill ${currentSigilType === 'sigil_algol' ? 'active' : ''}`}
                     onClick={() => setCurrentSigilType('sigil_algol')}
                   >
-                    Algol Chaos Star
+                    Algol
                   </button>
                 </div>
               </div>
 
-              {/* Central Sigil Showcase */}
-              <div className="central-sigil-altar-focus">
-                <LuciferSigil
-                  type={currentSigilType}
-                  isEmpowered={isSigilEmpowered}
-                  onSigilClick={handleSigilClick}
-                  size={360}
-                />
-                <div className="sigil-caption-sub">
-                  <span>✦ THE SACRED NEXUS • CLICK TO FOCUS THE BLACK FLAME ✦</span>
+              {/* VIEW: LIVE INTERACTIVE RITUAL ARENA */}
+              {templeMode === 'arena' ? (
+                <div className="arena-wrapper-dock">
+                  <InteractiveRitualArena
+                    sigilType={currentSigilType}
+                    isEmpowered={isSigilEmpowered}
+                    currentStepData={activeRitual.steps[currentStepIndex]}
+                    onArenaAction={handleToolAction}
+                  />
+                  {/* Parchment of Intent Station */}
+                  <div className="mt-4">
+                    <AltarSimulation
+                      currentStepData={activeRitual.steps[currentStepIndex]}
+                      onToolAction={handleToolAction}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* VIEW: CLASSIC ALTAR TABLE & SIGIL */
+                <>
+                  <div className="central-sigil-altar-focus">
+                    <LuciferSigil
+                      type={currentSigilType}
+                      isEmpowered={isSigilEmpowered}
+                      onSigilClick={handleSigilClick}
+                      size={360}
+                    />
+                    <div className="sigil-caption-sub">
+                      <span>✦ THE SACRED NEXUS • CLICK TO FOCUS THE BLACK FLAME ✦</span>
+                    </div>
+                  </div>
 
-              {/* Simulated Altar Tools & Actions */}
-              <AltarSimulation
-                currentStepData={activeRitual.steps[currentStepIndex]}
-                onToolAction={handleToolAction}
-              />
+                  <AltarSimulation
+                    currentStepData={activeRitual.steps[currentStepIndex]}
+                    onToolAction={handleToolAction}
+                  />
+                </>
+              )}
             </section>
 
             {/* Right Column: Step-by-Step Guided Teleprompter */}
@@ -277,12 +315,12 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 2: FULL ALTAR CHAMBER */}
+        {/* VIEW 2: FULL ALTAR & CIRCLE CHAMBER */}
         {activeMainView === 'altar_only' && (
           <div className="altar-fullscreen-view">
             <div className="altar-focus-banner">
-              <h2>Sanctum Focus & Evocation Chamber</h2>
-              <p>Direct the Athame, ignite the Black Flame, ring the Bell of Paimon, and drink the Elixir of Samael & Lilith.</p>
+              <h2>Sanctum Focus & Evocation Arena</h2>
+              <p>Direct the Athame, ignite the Black Flame, ring the Bell of Paimon, and drink the Elixir of Samael & Lilith directly on the circle.</p>
             </div>
 
             <div className="altar-large-canvas-wrapper">
@@ -305,19 +343,19 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="large-sigil-display">
-                <LuciferSigil
-                  type={currentSigilType}
-                  isEmpowered={isSigilEmpowered}
-                  onSigilClick={handleSigilClick}
-                  size={420}
+              <InteractiveRitualArena
+                sigilType={currentSigilType}
+                isEmpowered={isSigilEmpowered}
+                currentStepData={activeRitual.steps[currentStepIndex]}
+                onArenaAction={handleToolAction}
+              />
+
+              <div className="mt-6">
+                <AltarSimulation
+                  currentStepData={activeRitual.steps[currentStepIndex]}
+                  onToolAction={handleToolAction}
                 />
               </div>
-
-              <AltarSimulation
-                currentStepData={activeRitual.steps[currentStepIndex]}
-                onToolAction={handleToolAction}
-              />
             </div>
           </div>
         )}
